@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Phishing Awareness Project - Cybersecurity Education Demo',
+  title: 'Instagram Login - Phishing Awareness Project - Cybersecurity Education Demo',
   description: 'This is a legal phishing awareness and cybersecurity education project designed for security awareness training, cybersecurity expos, and educational demonstrations. This project demonstrates how phishing attacks work to educate users about online security threats. No real credentials are collected or stored. This is an educational tool only.',
   keywords: [
     'phishing awareness',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     google: 'FfzVsyaS2M5ojeVmNI3qwKlkP6yqjM7mHMN9lL-_twA',
   },
   openGraph: {
-    title: 'Phishing Awareness Project - Cybersecurity Education',
+    title: 'Instagram Login - Phishing Awareness Project - Cybersecurity Education',
     description: 'Legal phishing awareness and cybersecurity education project for security training and educational demonstrations',
     type: 'website',
   },
