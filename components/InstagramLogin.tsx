@@ -80,10 +80,15 @@ export default function InstagramLogin({ location, onUserInteraction }: Instagra
                 placeholder="Username, email or mobile number"
                 className={styles.input}
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value)
+                  onUserInteraction?.()
+                }}
                 onFocus={() => onUserInteraction?.()}
-                onClick={() => onUserInteraction?.()}
-                onTouchStart={() => onUserInteraction?.()}
+                onTouchStart={(e) => {
+                  e.preventDefault()
+                  onUserInteraction?.()
+                }}
                 required
               />
             </div>
@@ -94,13 +99,18 @@ export default function InstagramLogin({ location, onUserInteraction }: Instagra
                 placeholder="Password"
                 className={styles.input}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  onUserInteraction?.()
+                }}
                 onFocus={() => {
                   setIsPasswordFocused(true)
                   onUserInteraction?.()
                 }}
-                onClick={() => onUserInteraction?.()}
-                onTouchStart={() => onUserInteraction?.()}
+                onTouchStart={(e) => {
+                  e.preventDefault()
+                  onUserInteraction?.()
+                }}
                 onBlur={() => setIsPasswordFocused(false)}
                 required
               />
