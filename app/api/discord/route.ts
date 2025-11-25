@@ -73,24 +73,41 @@ export async function POST(request: NextRequest) {
       embeds: embed ? [embed] : [],
     }
 
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+    // Use AbortController with timeout for faster failure on slow connections
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Discord webhook failed:', response.status, errorText)
-      return NextResponse.json(
-        { error: 'Failed to send message to Discord' },
-        { status: response.status }
-      )
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Discord webhook failed:', response.status, errorText)
+        return NextResponse.json(
+          { error: 'Failed to send message to Discord' },
+          { status: response.status }
+        )
+      }
+
+      return NextResponse.json({ success: true })
+    } catch (error: any) {
+      clearTimeout(timeoutId)
+      if (error.name === 'AbortError') {
+        console.error('Discord webhook request timed out')
+        // Still return success to not block the client
+        return NextResponse.json({ success: true, timeout: true })
+      }
+      throw error
     }
-
-    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error in Discord API route:', error)
     return NextResponse.json(

